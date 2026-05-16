@@ -1,19 +1,27 @@
 package com.example.linkedup.ui.screens
-
+import androidx.compose.foundation.background
+import com.example.linkedup.objects.EventItem
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.linkedup.App
+import com.example.linkedup.objects.Event
+import com.example.linkedup.repository.EventRepository
 import com.example.linkedup.ui.theme.LinkedUpTheme
-
 @Composable
-fun HomeScreen() {
+fun HomeScreen(onEventClick: (Event) -> Unit) {
+
+    val activeEvent = remember {
+        EventRepository.getActiveEvent()
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -29,70 +37,88 @@ fun HomeScreen() {
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Recruiting Plattform für Karrieremessen",
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(16.dp))
         }
 
         item {
 
-            FeatureCard(
-                title = "Lebenslauf hochladen",
-                description = "Erstelle dein Profil und lade deinen CV hoch."
-            )
+            activeEvent?.let { event ->
 
-            Spacer(modifier = Modifier.height(12.dp))
+                ActiveEventCard(
+                    event = event,
+                    onClick = { onEventClick(event) }
+                )
+            }
 
-            FeatureCard(
-                title = "Smart Matching",
-                description = "Automatische 70–75% Übereinstimmung mit Jobs."
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            FeatureCard(
-                title = "Interaktive Events",
-                description = "Reagiere live auf Stellenangebote auf Messen."
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(24.dp))
         }
+    }
+}
 
-        item {
+@Composable
+fun ActiveEventCard(
+    event: Event,
+    onClick: () -> Unit
+) {
 
-            Text(
-                text = "Aktuelle Events",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
 
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+        Column {
 
-        items(
-            listOf(
-                "Tech Career Expo Berlin",
-                "Startup Recruiting Day",
-                "AI & Cloud Summit",
-                "IT Job Fair 2026"
-            )
-        ) { event ->
-
-            Card(
+            // HERO IMAGE
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 12.dp),
-                shape = RoundedCornerShape(16.dp)
+                    .height(160.dp)
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                )
+
+                // optional overlay gradient feeling
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp),
+                    contentAlignment = androidx.compose.ui.Alignment.BottomStart
+                ) {
+
+                    Text(
+                        text = event.title,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+
+            // CONTENT
+            Column(
+                modifier = Modifier.padding(16.dp)
             ) {
 
                 Text(
-                    text = event,
-                    modifier = Modifier.padding(16.dp)
+                    text = event.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(Modifier.height(12.dp))
+
+                Text(
+                    text = "Tap for details →",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -122,11 +148,68 @@ fun FeatureCard(title: String, description: String) {
         }
     }
 }
+@Composable
+fun TimelineCard(item: EventItem) {
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+
+        Column(modifier = Modifier.padding(16.dp)) {
+
+            Text(
+                text = item.time,
+                style = MaterialTheme.typography.labelMedium
+            )
+
+            Spacer(Modifier.height(4.dp))
+
+            Text(
+                text = item.title,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = item.type,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
+    }
+}
+@Composable
+fun EventDetailScreen(event: Event) {
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+
+        item {
+            Text(
+                text = event.title,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(Modifier.height(16.dp))
+        }
+
+        items(event.timeline) { item ->
+
+            TimelineCard(item)
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview() {
+fun AppPreview() {
+
     LinkedUpTheme {
-        HomeScreen()
+        App()
     }
 }

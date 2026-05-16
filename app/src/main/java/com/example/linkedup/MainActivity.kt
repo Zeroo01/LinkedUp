@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
 fun App() {
 
     var currentScreen by remember {
-        mutableStateOf(Screen.PROFILE)
+        mutableStateOf(Screen.HOME)
     }
 
     Scaffold(
@@ -73,7 +73,9 @@ fun App() {
 
             when (currentScreen) {
 
-                Screen.HOME -> HomeScreen()
+                Screen.HOME -> HomeScreen(
+                    onEventClick = {}
+                )
 
                 Screen.MATCHES -> MatchesScreen()
 
