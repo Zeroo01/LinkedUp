@@ -13,3 +13,6 @@ data class EventItem(
     val title: String,
     val type: String // z.B. "Talk", "Workshop", "Pitch"
 )
+
+
+
