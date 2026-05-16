@@ -5,11 +5,13 @@ data class Event(
     val description: String,
     val imageUrl: String,
     val isActive: Boolean,
-    val timeline: List<EventItem>
+    val timeline: List<EventItem>,
+    val startTime: Long
 )
 
 data class EventItem(
     val time: String,
     val title: String,
-    val type: String // z.B. "Talk", "Workshop", "Pitch"
+    val type: String,
+    val isLive: Boolean = false
 )

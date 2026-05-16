@@ -8,10 +8,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
-import com.example.linkedup.ui.screens.HomeScreen
-import com.example.linkedup.ui.screens.MatchesScreen
-import com.example.linkedup.ui.screens.ProfileScreen
+import com.example.linkedup.ui.screens.*
 import com.example.linkedup.ui.theme.LinkedUpTheme
+import com.example.linkedup.objects.Event
 
 enum class Screen {
     HOME,
@@ -36,9 +35,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun App() {
 
-    var currentScreen by remember {
-        mutableStateOf(Screen.HOME)
-    }
+    var currentScreen by remember { mutableStateOf(Screen.HOME) }
+    var selectedEvent by remember { mutableStateOf<Event?>(null) }
 
     Scaffold(
         bottomBar = {
@@ -47,21 +45,30 @@ fun App() {
 
                 NavigationBarItem(
                     selected = currentScreen == Screen.HOME,
-                    onClick = { currentScreen = Screen.HOME },
+                    onClick = {
+                        currentScreen = Screen.HOME
+                        selectedEvent = null
+                    },
                     label = { Text("Home") },
                     icon = {}
                 )
 
                 NavigationBarItem(
                     selected = currentScreen == Screen.MATCHES,
-                    onClick = { currentScreen = Screen.MATCHES },
+                    onClick = {
+                        currentScreen = Screen.MATCHES
+                        selectedEvent = null
+                    },
                     label = { Text("Matches") },
                     icon = {}
                 )
 
                 NavigationBarItem(
                     selected = currentScreen == Screen.PROFILE,
-                    onClick = { currentScreen = Screen.PROFILE },
+                    onClick = {
+                        currentScreen = Screen.PROFILE
+                        selectedEvent = null
+                    },
                     label = { Text("Profil") },
                     icon = {}
                 )
@@ -71,15 +78,29 @@ fun App() {
 
         Box(modifier = Modifier.padding(padding)) {
 
-            when (currentScreen) {
+            when {
 
-                Screen.HOME -> HomeScreen(
-                    onEventClick = {}
-                )
+                // EVENT DETAIL (HIGHEST PRIORITY)
+                selectedEvent != null -> {
 
-                Screen.MATCHES -> MatchesScreen()
+                    EventDetailScreen(
+                        event = selectedEvent!!,
+                        onBack = { selectedEvent = null }
+                    )
+                }
 
-                Screen.PROFILE -> ProfileScreen()
+                currentScreen == Screen.HOME -> {
+
+                    HomeScreen(
+                        onEventClick = { event ->
+                            selectedEvent = event
+                        }
+                    )
+                }
+
+                currentScreen == Screen.MATCHES -> MatchesScreen()
+
+                currentScreen == Screen.PROFILE -> ProfileScreen()
             }
         }
     }

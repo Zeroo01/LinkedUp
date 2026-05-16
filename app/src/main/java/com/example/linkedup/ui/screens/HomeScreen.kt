@@ -62,12 +62,12 @@ fun ActiveEventCard(
 ) {
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
-        )
+        ),
+        onClick = onClick
     ) {
 
         Column {
@@ -145,62 +145,6 @@ fun FeatureCard(title: String, description: String) {
             Spacer(modifier = Modifier.height(6.dp))
 
             Text(text = description)
-        }
-    }
-}
-@Composable
-fun TimelineCard(item: EventItem) {
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 12.dp),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-
-        Column(modifier = Modifier.padding(16.dp)) {
-
-            Text(
-                text = item.time,
-                style = MaterialTheme.typography.labelMedium
-            )
-
-            Spacer(Modifier.height(4.dp))
-
-            Text(
-                text = item.title,
-                fontWeight = FontWeight.Bold
-            )
-
-            Text(
-                text = item.type,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-    }
-}
-@Composable
-fun EventDetailScreen(event: Event) {
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-
-        item {
-            Text(
-                text = event.title,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(Modifier.height(16.dp))
-        }
-
-        items(event.timeline) { item ->
-
-            TimelineCard(item)
         }
     }
 }

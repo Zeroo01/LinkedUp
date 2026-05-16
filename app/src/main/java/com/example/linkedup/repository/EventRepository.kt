@@ -9,14 +9,11 @@ object EventRepository {
         Event(
             id = "1",
             title = "Tech Career Expo Berlin",
-            description = "Das größte Recruiting Event für Tech Talente.",
-            imageUrl = "https://picsum.photos/800/400",
+            description = "Recruiting Event",
+            imageUrl = "",
             isActive = true,
-            timeline = listOf(
-                EventItem("10:00", "Opening Keynote", "Talk"),
-                EventItem("11:00", "Google Workshop", "Workshop"),
-                EventItem("13:00", "Startup Pitches", "Pitch")
-            )
+            startTime = System.currentTimeMillis(),
+            timeline = listOf()
         )
     )
 
