@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.linkedup.data.FirebaseTest
 import com.example.linkedup.ui.theme.LinkedUpTheme
 
 @Composable
@@ -158,6 +159,15 @@ fun ProfileScreen() {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Profil speichern")
+            }
+
+            Button(
+                onClick = {
+                    FirebaseTest.writeTestUser()
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Firebase Test starten")
             }
 
             Spacer(modifier = Modifier.height(12.dp))
