@@ -16,6 +16,12 @@ import com.example.linkedup.App
 import com.example.linkedup.objects.Event
 import com.example.linkedup.repository.EventRepository
 import com.example.linkedup.ui.theme.LinkedUpTheme
+import androidx.compose.runtime.*
+import com.example.linkedup.utils.ambientGlow
+import com.example.linkedup.utils.animatedBorderBrush
+import com.example.linkedup.utils.eventTimer
+import java.util.concurrent.TimeUnit
+import com.example.linkedup.utils.glow
 @Composable
 fun HomeScreen(onEventClick: (Event) -> Unit) {
 
@@ -61,65 +67,113 @@ fun ActiveEventCard(
     onClick: () -> Unit
 ) {
 
+    val timerFlow = remember(event.id) {
+        eventTimer(System.currentTimeMillis())
+    }
+
+    val elapsedTime by timerFlow.collectAsState(initial = 0L)
+
+    val minutes = java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(elapsedTime)
+    val seconds = java.util.concurrent.TimeUnit.MILLISECONDS.toSeconds(elapsedTime) % 60
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        shape = RoundedCornerShape(28.dp),
         onClick = onClick
     ) {
 
         Column {
 
-            // HERO IMAGE
+            // HERO
+            val borderBrush = animatedBorderBrush()
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp)
-            ) {
+                    .height(180.dp)
+                    .padding(1.dp) //grauer rand
 
+            ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .matchParentSize()
+                        .glow()
                 )
 
-                // optional overlay gradient feeling
+                // ANIMATED BORDER
                 Box(
                     modifier = Modifier
+                        .matchParentSize()
+                        .background(
+                            animatedBorderBrush(),
+                            RoundedCornerShape(28.dp)
+                        )
+                )
+
+                // INNER CARD
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .padding(4.dp)
+                        .background(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(26.dp)
+                        )
+                )
+
+                // CONTENT
+                Column(
+                    modifier = Modifier
                         .fillMaxSize()
-                        .padding(12.dp),
-                    contentAlignment = androidx.compose.ui.Alignment.BottomStart
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Bottom
                 ) {
 
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Text(
+                            text = event.title,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        Surface(
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f),
+                            shape = RoundedCornerShape(50)
+                        ) {
+                            Text(
+                                text = "LIVE %02d:%02d".format(minutes, seconds),
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(Modifier.height(6.dp))
+
                     Text(
-                        text = event.title,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        text = event.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f)
+                    )
+
+                    Spacer(Modifier.height(10.dp))
+
+                    Text(
+                        text = "Tap to view timeline →",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                     )
                 }
-            }
-
-            // CONTENT
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-
-                Text(
-                    text = event.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(Modifier.height(12.dp))
-
-                Text(
-                    text = "Tap for details →",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
             }
         }
     }
