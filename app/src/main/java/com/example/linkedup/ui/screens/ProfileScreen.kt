@@ -5,23 +5,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.linkedup.data.FirebaseTest
-import com.example.linkedup.ui.theme.LinkedUpTheme
+import com.example.linkedup.data.AuthRepository
+import com.example.linkedup.data.FirebaseProfileRepository
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    onLogout: () -> Unit = {}
+) {
 
     var firstName by remember { mutableStateOf("Max") }
     var lastName by remember { mutableStateOf("Mustermann") }
-    var email by remember { mutableStateOf("max.mustermann@gmail.com") }
+    var email by remember { mutableStateOf("max@test.com") }
     var jobTitle by remember { mutableStateOf("Android Developer") }
-    var skills by remember { mutableStateOf("Kotlin, Jetpack Compose, Firebase") }
-    var interests by remember { mutableStateOf("IT, Startups, Mobile Apps") }
+    var skills by remember { mutableStateOf("Kotlin, Compose") }
+    var interests by remember { mutableStateOf("IT, Startups") }
 
     LazyColumn(
         modifier = Modifier
@@ -44,152 +44,77 @@ fun ProfileScreen() {
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                shape = RoundedCornerShape(20.dp)
             ) {
 
                 Column(modifier = Modifier.padding(20.dp)) {
 
                     Text(
                         text = "Persönliche Daten",
-                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(Modifier.height(12.dp))
 
-                    OutlinedTextField(
-                        value = firstName,
-                        onValueChange = { firstName = it },
-                        label = { Text("Vorname") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    OutlinedTextField(
-                        value = lastName,
-                        onValueChange = { lastName = it },
-                        label = { Text("Nachname") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text("E-Mail") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    OutlinedTextField(
-                        value = jobTitle,
-                        onValueChange = { jobTitle = it },
-                        label = { Text("Beruf") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
+                    Text("Vorname: $firstName")
+                    Text("Nachname: $lastName")
+                    Text("E-Mail: $email")
+                    Text("Beruf: $jobTitle")
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(20.dp))
         }
 
         item {
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                shape = RoundedCornerShape(20.dp)
             ) {
 
                 Column(modifier = Modifier.padding(20.dp)) {
 
                     Text(
                         text = "Skills",
-                        style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(Modifier.height(8.dp))
+                    Text(skills)
 
-                    OutlinedTextField(
-                        value = skills,
-                        onValueChange = { skills = it },
-                        label = { Text("Kenntnisse") },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 3
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(Modifier.height(12.dp))
 
                     Text(
                         text = "Interessen",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.Bold
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = interests,
-                        onValueChange = { interests = it },
-                        label = { Text("Unternehmen / Branchen") },
-                        modifier = Modifier.fillMaxWidth(),
-                        minLines = 3
-                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(interests)
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(30.dp))
         }
 
         item {
 
+            // 🔴 LOGOUT BUTTON
             Button(
                 onClick = {
-                    // TODO: Save Profile später (Firebase / Local DB)
+                    AuthRepository.logout()
+                    onLogout()
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error
+                )
             ) {
-                Text("Profil speichern")
-            }
-
-            Button(
-                onClick = {
-                    FirebaseTest.writeTestUser()
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Firebase Test starten")
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedButton(
-                onClick = {
-                    // TODO: CV Upload später
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Lebenslauf hochladen")
+                Text("Abmelden")
             }
 
             Spacer(modifier = Modifier.height(40.dp))
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProfileScreenPreview() {
-    LinkedUpTheme {
-        ProfileScreen()
     }
 }

@@ -1,7 +1,6 @@
 package com.example.linkedup.repository
 
 import com.example.linkedup.objects.Event
-import com.example.linkedup.objects.EventItem
 
 object EventRepository {
 

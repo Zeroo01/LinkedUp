@@ -8,6 +8,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
+import com.example.linkedup.data.AuthRepository
+import com.example.linkedup.ui.auth.AuthScreen
 import com.example.linkedup.ui.screens.*
 import com.example.linkedup.ui.theme.LinkedUpTheme
 import com.example.linkedup.objects.Event
@@ -26,14 +28,43 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LinkedUpTheme {
-                App()
+                AppRoot()
             }
         }
     }
 }
 
 @Composable
-fun App() {
+fun AppRoot() {
+
+    var isLoggedIn by remember {
+        mutableStateOf(AuthRepository.isLoggedIn())
+    }
+
+    if (!isLoggedIn) {
+
+        // 🔐 LOGIN / REGISTER SCREEN
+        AuthScreen(
+            onLoginSuccess = {
+                isLoggedIn = true
+            }
+        )
+
+    } else {
+
+        // 📱 APP START
+        App(
+            onLogout = {
+                isLoggedIn = false
+            }
+        )
+    }
+}
+
+@Composable
+fun App(
+    onLogout: () -> Unit
+) {
 
     var currentScreen by remember { mutableStateOf(Screen.HOME) }
     var selectedEvent by remember { mutableStateOf<Event?>(null) }
@@ -78,29 +109,33 @@ fun App() {
 
         Box(modifier = Modifier.padding(padding)) {
 
-            when {
+            // 🔥 EVENT DETAIL PRIORITY
+            if (selectedEvent != null) {
 
-                // EVENT DETAIL (HIGHEST PRIORITY)
-                selectedEvent != null -> {
+                EventDetailScreen(
+                    event = selectedEvent!!,
+                    onBack = { selectedEvent = null }
+                )
 
-                    EventDetailScreen(
-                        event = selectedEvent!!,
-                        onBack = { selectedEvent = null }
-                    )
-                }
+            } else {
 
-                currentScreen == Screen.HOME -> {
+                when (currentScreen) {
 
-                    HomeScreen(
+                    Screen.HOME -> HomeScreen(
                         onEventClick = { event ->
                             selectedEvent = event
                         }
                     )
+
+                    Screen.MATCHES -> MatchesScreen()
+
+                    Screen.PROFILE -> ProfileScreen(
+                        onLogout = {
+                            AuthRepository.logout()
+                            onLogout()
+                        }
+                    )
                 }
-
-                currentScreen == Screen.MATCHES -> MatchesScreen()
-
-                currentScreen == Screen.PROFILE -> ProfileScreen()
             }
         }
     }

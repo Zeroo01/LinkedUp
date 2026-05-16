@@ -1,29 +1,28 @@
 package com.example.linkedup.ui.screens
+
 import androidx.compose.foundation.background
-import com.example.linkedup.objects.EventItem
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.linkedup.App
 import com.example.linkedup.objects.Event
+import com.example.linkedup.objects.EventItem
 import com.example.linkedup.repository.EventRepository
 import com.example.linkedup.ui.theme.LinkedUpTheme
-import androidx.compose.runtime.*
-import com.example.linkedup.utils.ambientGlow
 import com.example.linkedup.utils.animatedBorderBrush
 import com.example.linkedup.utils.eventTimer
-import java.util.concurrent.TimeUnit
 import com.example.linkedup.utils.glow
+import java.util.concurrent.TimeUnit
+
 @Composable
-fun HomeScreen(onEventClick: (Event) -> Unit) {
+fun HomeScreen(
+    onEventClick: (Event) -> Unit
+) {
 
     val activeEvent = remember {
         EventRepository.getActiveEvent()
@@ -73,8 +72,8 @@ fun ActiveEventCard(
 
     val elapsedTime by timerFlow.collectAsState(initial = 0L)
 
-    val minutes = java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(elapsedTime)
-    val seconds = java.util.concurrent.TimeUnit.MILLISECONDS.toSeconds(elapsedTime) % 60
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsedTime)
+    val seconds = TimeUnit.MILLISECONDS.toSeconds(elapsedTime) % 60
 
     Card(
         modifier = Modifier
@@ -86,23 +85,19 @@ fun ActiveEventCard(
 
         Column {
 
-            // HERO
-            val borderBrush = animatedBorderBrush()
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .padding(1.dp) //grauer rand
-
+                    .padding(1.dp)
             ) {
+
                 Box(
                     modifier = Modifier
                         .matchParentSize()
                         .glow()
                 )
 
-                // ANIMATED BORDER
                 Box(
                     modifier = Modifier
                         .matchParentSize()
@@ -112,7 +107,6 @@ fun ActiveEventCard(
                         )
                 )
 
-                // INNER CARD
                 Box(
                     modifier = Modifier
                         .matchParentSize()
@@ -123,7 +117,6 @@ fun ActiveEventCard(
                         )
                 )
 
-                // CONTENT
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -153,7 +146,10 @@ fun ActiveEventCard(
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                modifier = Modifier.padding(
+                                    horizontal = 10.dp,
+                                    vertical = 4.dp
+                                )
                             )
                         }
                     }
@@ -200,14 +196,5 @@ fun FeatureCard(title: String, description: String) {
 
             Text(text = description)
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AppPreview() {
-
-    LinkedUpTheme {
-        App()
     }
 }
