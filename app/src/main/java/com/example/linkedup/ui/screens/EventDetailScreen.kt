@@ -1,15 +1,19 @@
 package com.example.linkedup.ui.screens
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.linkedup.objects.Event
-import com.example.linkedup.objects.EventItem
+import com.example.linkedup.objects.Presentation
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 
 @Composable
 fun EventDetailScreen(
@@ -41,42 +45,93 @@ fun EventDetailScreen(
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(20.dp))
         }
 
-        items(event.timeline) { item ->
-            TimelineCard(item)
+        items(event.presentations) { presentation ->
+
+            PresentationCard(
+                presentation = presentation
+            )
         }
     }
 }
 
 @Composable
-fun TimelineCard(item: EventItem) {
+fun PresentationCard(
+    presentation: Presentation
+) {
+
+    var expanded by remember {
+        mutableStateOf(false)
+    }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp)
+            .clickable {
+                expanded = !expanded
+            }
+            .animateContentSize(),
+        shape = RoundedCornerShape(24.dp)
     ) {
 
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
 
-            Text(
-                text = item.time,
-                style = MaterialTheme.typography.labelMedium
-            )
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
 
-            Spacer(Modifier.height(4.dp))
+                Column {
 
-            Text(
-                text = item.title,
-                fontWeight = FontWeight.Bold
-            )
+                    Text(
+                        text = presentation.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
 
-            Text(
-                text = item.type,
-                style = MaterialTheme.typography.bodySmall
-            )
+                    Spacer(Modifier.height(4.dp))
+
+                    Text(
+                        text = presentation.time,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+
+            if (expanded) {
+
+                Spacer(Modifier.height(16.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(140.dp)
+                        .background(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            RoundedCornerShape(20.dp)
+                        )
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                Text(
+                    text = presentation.speaker,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                Spacer(Modifier.height(8.dp))
+
+                Text(
+                    text = presentation.description,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
         }
     }
 }

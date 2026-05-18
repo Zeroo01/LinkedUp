@@ -1,6 +1,6 @@
 package com.example.linkedup.ui.screens
 import androidx.compose.foundation.background
-import com.example.linkedup.objects.EventItem
+import com.example.linkedup.objects.Presentation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
