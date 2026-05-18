@@ -33,7 +33,7 @@ fun AuthScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 📧 EMAIL
+        // EMAIL
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -44,7 +44,7 @@ fun AuthScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // 🔑 PASSWORD
+        // PASSWORD
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -55,7 +55,7 @@ fun AuthScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // 🔘 LOGIN / REGISTER BUTTON
+        // LOGIN / REGISTER BUTTON
         Button(
             onClick = {
 
@@ -104,7 +104,7 @@ fun AuthScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // 🔄 MODE SWITCH
+        // MODE SWITCH
         TextButton(
             onClick = {
                 isLoginMode = !isLoginMode
@@ -119,7 +119,7 @@ fun AuthScreen(
             )
         }
 
-        // ❌ ERROR
+        // ERROR
         errorMessage?.let {
             Spacer(modifier = Modifier.height(12.dp))
             Text(

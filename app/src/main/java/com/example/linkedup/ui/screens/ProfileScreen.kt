@@ -1,35 +1,56 @@
 package com.example.linkedup.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.linkedup.data.AuthRepository
-import com.example.linkedup.data.FirebaseProfileRepository
+import com.example.linkedup.data.ProfileRepository
+import com.example.linkedup.ui.components.ProfileCard
+import com.example.linkedup.ui.components.ProfileRow
 
 @Composable
 fun ProfileScreen(
-    onLogout: () -> Unit = {}
+    onLogout: () -> Unit
 ) {
 
-    var firstName by remember { mutableStateOf("Max") }
-    var lastName by remember { mutableStateOf("Mustermann") }
-    var email by remember { mutableStateOf("max@test.com") }
-    var jobTitle by remember { mutableStateOf("Android Developer") }
-    var skills by remember { mutableStateOf("Kotlin, Compose") }
-    var interests by remember { mutableStateOf("IT, Startups") }
+    val email = AuthRepository.getCurrentEmail()
 
-    LazyColumn(
+    var isEditing by remember { mutableStateOf(false) }
+
+    var firstName by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var jobTitle by remember { mutableStateOf("") }
+    var skills by remember { mutableStateOf("") }
+    var interests by remember { mutableStateOf("") }
+
+    LaunchedEffect(email) {
+        email?.let {
+            ProfileRepository.loadProfile(it) { data ->
+                firstName = data["firstName"] as? String ?: ""
+                lastName = data["lastName"] as? String ?: ""
+                jobTitle = data["jobTitle"] as? String ?: ""
+                skills = data["skills"] as? String ?: ""
+                interests = data["interests"] as? String ?: ""
+            }
+        }
+    }
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
 
-        item {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
 
             Text(
                 text = "Profil",
@@ -37,84 +58,87 @@ fun ProfileScreen(
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-
-        item {
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp)
+            Button(
+                onClick = { isEditing = !isEditing }
             ) {
-
-                Column(modifier = Modifier.padding(20.dp)) {
-
-                    Text(
-                        text = "Persönliche Daten",
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(Modifier.height(12.dp))
-
-                    Text("Vorname: $firstName")
-                    Text("Nachname: $lastName")
-                    Text("E-Mail: $email")
-                    Text("Beruf: $jobTitle")
-                }
+                Text(if (isEditing) "Abbrechen" else "Bearbeiten")
             }
-
-            Spacer(Modifier.height(20.dp))
         }
 
-        item {
+        Spacer(modifier = Modifier.height(16.dp))
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp)
-            ) {
+        ProfileCard(title = "Persönliche Daten") {
 
-                Column(modifier = Modifier.padding(20.dp)) {
+            ProfileRow(
+                label = "Vorname",
+                value = firstName,
+                isEditing = isEditing,
+                onValueChange = { firstName = it }
+            )
 
-                    Text(
-                        text = "Skills",
-                        fontWeight = FontWeight.Bold
-                    )
+            ProfileRow(
+                label = "Nachname",
+                value = lastName,
+                isEditing = isEditing,
+                onValueChange = { lastName = it }
+            )
 
-                    Spacer(Modifier.height(8.dp))
-                    Text(skills)
-
-                    Spacer(Modifier.height(12.dp))
-
-                    Text(
-                        text = "Interessen",
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(Modifier.height(8.dp))
-                    Text(interests)
-                }
-            }
-
-            Spacer(Modifier.height(30.dp))
+            ProfileRow(
+                label = "Beruf",
+                value = jobTitle,
+                isEditing = isEditing,
+                onValueChange = { jobTitle = it }
+            )
         }
 
-        item {
+        ProfileCard(title = "Skills") {
 
-            // 🔴 LOGOUT BUTTON
+            ProfileRow(
+                label = "Kenntnisse",
+                value = skills,
+                isEditing = isEditing,
+                onValueChange = { skills = it }
+            )
+
+            ProfileRow(
+                label = "Interessen",
+                value = interests,
+                isEditing = isEditing,
+                onValueChange = { interests = it }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        if (isEditing) {
+
             Button(
                 onClick = {
-                    AuthRepository.logout()
-                    onLogout()
+                    email?.let {
+                        ProfileRepository.updateProfile(
+                            email = it,
+                            firstName = firstName,
+                            lastName = lastName,
+                            jobTitle = jobTitle,
+                            skills = skills,
+                            interests = interests
+                        )
+                    }
+                    isEditing = false
                 },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                )
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Abmelden")
+                Text("Fertig")
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        OutlinedButton(
+            onClick = onLogout,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Abmelden")
         }
     }
 }

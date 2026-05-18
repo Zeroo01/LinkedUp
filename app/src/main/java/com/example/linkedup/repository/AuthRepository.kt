@@ -6,7 +6,6 @@ object AuthRepository {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    // 🔐 LOGIN
     fun login(
         email: String,
         password: String,
@@ -21,7 +20,6 @@ object AuthRepository {
             }
     }
 
-    // 🆕 REGISTER
     fun register(
         email: String,
         password: String,
@@ -36,17 +34,14 @@ object AuthRepository {
             }
     }
 
-    // 👤 CHECK LOGIN STATUS
     fun isLoggedIn(): Boolean {
         return auth.currentUser != null
     }
 
-    // 📧 CURRENT USER EMAIL
     fun getCurrentEmail(): String? {
         return auth.currentUser?.email
     }
 
-    // 🚪 LOGOUT
     fun logout() {
         auth.signOut()
     }

@@ -2,11 +2,22 @@ package com.example.linkedup.data
 
 import com.google.firebase.firestore.FirebaseFirestore
 
-object FirebaseProfileRepository {
+object ProfileRepository {
 
     private val db = FirebaseFirestore.getInstance()
 
-    // 👤 USER NUR BEIM LOGIN ERSTELLEN (einmalig)
+    fun loadProfile(
+        email: String,
+        onResult: (Map<String, Any>) -> Unit
+    ) {
+        db.collection("users")
+            .document(email)
+            .get()
+            .addOnSuccessListener { doc ->
+                onResult(doc.data ?: emptyMap())
+            }
+    }
+
     fun createUserIfNotExists(email: String) {
 
         val userRef = db.collection("users").document(email)
@@ -29,24 +40,6 @@ object FirebaseProfileRepository {
         }
     }
 
-    // 📥 PROFIL LADEN
-    fun loadProfile(
-        email: String,
-        onResult: (Map<String, Any>) -> Unit
-    ) {
-
-        db.collection("users")
-            .document(email)
-            .get()
-            .addOnSuccessListener { doc ->
-
-                if (doc.exists()) {
-                    onResult(doc.data ?: emptyMap())
-                }
-            }
-    }
-
-    // 💾 UPDATE (BEI "FERTIG")
     fun updateProfile(
         email: String,
         firstName: String,

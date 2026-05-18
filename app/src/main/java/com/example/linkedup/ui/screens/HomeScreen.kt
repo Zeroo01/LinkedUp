@@ -1,6 +1,5 @@
 package com.example.linkedup.ui.screens
 import androidx.compose.foundation.background
-import com.example.linkedup.objects.EventItem
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -200,14 +199,5 @@ fun FeatureCard(title: String, description: String) {
 
             Text(text = description)
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AppPreview() {
-
-    LinkedUpTheme {
-        App()
     }
 }

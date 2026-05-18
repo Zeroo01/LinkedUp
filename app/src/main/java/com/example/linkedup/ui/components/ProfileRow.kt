@@ -13,33 +13,34 @@ fun ProfileRow(
     isEditing: Boolean,
     onValueChange: (String) -> Unit
 ) {
-
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
 
         Text(
             text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary
+            style = MaterialTheme.typography.labelMedium
         )
 
-        Spacer(Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         if (isEditing) {
 
             OutlinedTextField(
                 value = value,
                 onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
         } else {
 
             Text(
-                text = value,
+                text = value.ifEmpty { "-" },
                 style = MaterialTheme.typography.bodyLarge
             )
         }
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(12.dp))
     }
 }
