@@ -1,4 +1,4 @@
-package com.example.linkedup.ui.auth
+/**package com.example.linkedup.ui.auth
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,4 +43,4 @@ class ProfileViewModel(
     fun setInterests(value: String) {
         profile = profile.copy(interests = value)
     }
-}
+}**/

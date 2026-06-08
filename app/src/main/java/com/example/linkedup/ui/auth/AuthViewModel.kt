@@ -1,4 +1,4 @@
-package com.example.linkedup.ui.auth
+/**package com.example.linkedup.ui.auth
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
@@ -49,4 +49,4 @@ class AuthViewModel(
             }
         }
     }
-}
+}**/

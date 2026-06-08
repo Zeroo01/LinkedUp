@@ -1,4 +1,4 @@
-package com.example.linkedup.ui.screens
+/**package com.example.linkedup.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.linkedup.App
 import com.example.linkedup.objects.Event
 import com.example.linkedup.repository.EventRepository
 import com.example.linkedup.ui.theme.LinkedUpTheme
@@ -201,3 +200,4 @@ fun FeatureCard(title: String, description: String) {
         }
     }
 }
+**/

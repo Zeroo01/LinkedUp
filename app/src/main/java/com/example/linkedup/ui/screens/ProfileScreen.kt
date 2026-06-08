@@ -1,4 +1,4 @@
-package com.example.linkedup.ui.screens
+/**package com.example.linkedup.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -54,4 +54,4 @@ fun ProfileScreen(
             Text("Logout")
         }
     }
-}
+}**/

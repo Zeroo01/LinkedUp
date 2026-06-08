@@ -5,21 +5,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.linkedup.data.AuthRepository
 
 @Composable
 fun AuthScreen(
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: (String) -> Unit
 ) {
-
-    val viewModel = remember { AuthViewModel() }
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     var isLoginMode by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var loading by remember { mutableStateOf(false) }
 
-    val loading = viewModel.loading
-    val errorMessage = viewModel.error
+    var selectedRole by remember { mutableStateOf("APPLICANT") }
 
     Column(
         modifier = Modifier
@@ -33,8 +33,9 @@ fun AuthScreen(
             style = MaterialTheme.typography.headlineMedium
         )
 
-        Spacer(Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
+        // EMAIL
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -43,8 +44,9 @@ fun AuthScreen(
             singleLine = true
         )
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
+        // PASSWORD
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -53,34 +55,101 @@ fun AuthScreen(
             singleLine = true
         )
 
-        Spacer(Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
+        // Rollen Auswahl (nur im Register-Modus)
+        if (!isLoginMode) {
+
+            Text(
+                text = "Rolle",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row {
+                RadioButton(
+                    selected = selectedRole == "APPLICANT",
+                    onClick = { selectedRole = "APPLICANT" }
+                )
+                Text("Bewerber")
+            }
+
+            Row {
+                RadioButton(
+                    selected = selectedRole == "RECRUITER",
+                    onClick = { selectedRole = "RECRUITER" }
+                )
+                Text("Recruiter")
+            }
+
+            Row {
+                RadioButton(
+                    selected = selectedRole == "EVENT_MANAGER",
+                    onClick = { selectedRole = "EVENT_MANAGER" }
+                )
+                Text("Event Manager")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        // Login / Registrierungs-Button
         Button(
             onClick = {
+
+                loading = true
+                errorMessage = null
+
                 if (isLoginMode) {
-                    viewModel.login(email, password, onLoginSuccess)
+
+                    AuthRepository.login(email, password) { success, error, role ->
+
+                        loading = false
+
+                        if (success) {
+                            onLoginSuccess(role ?: "APPLICANT")
+                        } else {
+                            errorMessage = error
+                        }
+                    }
+
                 } else {
-                    viewModel.register(email, password, onLoginSuccess)
+
+                    AuthRepository.register(
+                        email,
+                        password,
+                        selectedRole
+                    ) { success, error, role ->
+
+                        loading = false
+
+                        if (success) {
+                            onLoginSuccess(role ?: selectedRole)
+                        } else {
+                            errorMessage = error
+                        }
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = email.isNotBlank() && password.isNotBlank() && !loading
         ) {
             Text(
-                if (loading)
-                    "Lädt..."
-                else if (isLoginMode)
-                    "Login"
-                else
-                    "Registrieren"
+                text =
+                    if (loading) "Lädt..."
+                    else if (isLoginMode) "Login"
+                    else "Registrieren"
             )
         }
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
+        // Switch
         TextButton(
             onClick = {
                 isLoginMode = !isLoginMode
+                errorMessage = null
             }
         ) {
             Text(
@@ -91,8 +160,9 @@ fun AuthScreen(
             )
         }
 
+        // Fehlermeldung
         errorMessage?.let {
-            Spacer(Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = it,
                 color = MaterialTheme.colorScheme.error

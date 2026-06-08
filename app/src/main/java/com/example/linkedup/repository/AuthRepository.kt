@@ -1,32 +1,82 @@
-package com.example.linkedup.data.repository
+package com.example.linkedup.data
 
+import com.example.linkedup.model.UserData
+import com.example.linkedup.model.UserRole
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.tasks.await
+import com.google.firebase.firestore.FirebaseFirestore
 
-class AuthRepository(
+object AuthRepository {
+
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-) {
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    suspend fun login(email: String, password: String): Result<String> {
-        return try {
-            val result = auth.signInWithEmailAndPassword(email, password).await()
-            val emailResult = result.user?.email ?: ""
-            Result.success(emailResult)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    // Einloggen
+    fun login(
+        email: String,
+        password: String,
+        onResult: (Boolean, String?, String?) -> Unit
+    ) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener { result ->
+
+                val uid = result.user?.uid ?: return@addOnSuccessListener
+
+                firestore.collection("users")
+                    .document(uid)
+                    .get()
+                    .addOnSuccessListener { doc ->
+
+                        val role = doc.getString("role")
+
+                        if (role != null) {
+                            onResult(true, null, role)
+                        } else {
+                            onResult(false, "Role nicht gefunden", null)
+                        }
+                    }
+                    .addOnFailureListener { error ->
+                        onResult(false, error.message, null)
+                    }
+            }
+            .addOnFailureListener { error ->
+                onResult(false, error.message, null)
+            }
     }
 
-    suspend fun register(email: String, password: String): Result<String> {
-        return try {
-            val result = auth.createUserWithEmailAndPassword(email, password).await()
-            val emailResult = result.user?.email ?: ""
-            Result.success(emailResult)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    // Registrierung
+    fun register(
+        email: String,
+        password: String,
+        role: String,
+        onResult: (Boolean, String?, String?) -> Unit
+    ) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnSuccessListener { result ->
+
+                val uid = result.user?.uid ?: return@addOnSuccessListener
+
+                val user = UserData(
+                    uid = uid,
+                    email = email,
+                    role = UserRole.valueOf(role)
+                )
+
+                firestore.collection("users")
+                    .document(uid)
+                    .set(user)
+                    .addOnSuccessListener {
+                        onResult(true, null, user.role.name)
+                    }
+                    .addOnFailureListener { error ->
+                        onResult(false, error.message, null)
+                    }
+            }
+            .addOnFailureListener { error ->
+                onResult(false, error.message, null)
+            }
     }
 
+    // UTILS
     fun isLoggedIn(): Boolean {
         return auth.currentUser != null
     }
@@ -37,11 +87,5 @@ class AuthRepository(
 
     fun logout() {
         auth.signOut()
-    }
-
-    companion object {
-        fun getCurrentEmail() {
-            TODO("Not yet implemented")
-        }
     }
 }
