@@ -2,45 +2,39 @@ package com.example.linkedup.repository
 
 import com.example.linkedup.objects.Event
 import com.example.linkedup.objects.Presentation
+class EventRepository {
 
-object EventRepository {
-
-    val events = listOf(
-
+    private val events = listOf(
         Event(
             id = "1",
-            title = "Tech Career Expo Berlin",
-            description = "Das größte Recruiting Event für Tech Talente.",
+            title = "Test Event titel",
+            description = "filler filler filler description",
             imageUrl = "",
             isActive = true,
-
             presentations = listOf(
-
                 Presentation(
                     id = "1",
-                    title = "Opening Keynote",
-                    speaker = "Anna Schmidt",
+                    title = "TestName 1",
+                    speaker = "Test speaker 1",
                     time = "10:00",
                     imageUrl = "",
-                    description = "Die Zukunft von AI Recruiting."
+                    description = "1111 test 1111."
                 ),
-
                 Presentation(
                     id = "2",
-                    title = "Google Workshop",
-                    speaker = "Max Weber",
+                    title = "TestName 2",
+                    speaker = "Test speaker 2",
                     time = "11:00",
                     imageUrl = "",
-                    description = "Hands-on Android Workshop."
+                    description = "2222 test 22222"
                 ),
-
                 Presentation(
                     id = "3",
-                    title = "Startup Pitches",
-                    speaker = "Various Founders",
+                    title = "TestName 3",
+                    speaker = "Test speaker 3",
                     time = "13:00",
                     imageUrl = "",
-                    description = "Die spannendsten Berliner Startups."
+                    description = "3333 test 333333."
                 )
             )
         )
@@ -48,5 +42,9 @@ object EventRepository {
 
     fun getActiveEvent(): Event? {
         return events.find { it.isActive }
+    }
+
+    fun getEventById(id: String): Event? {
+        return events.find { it.id == id }
     }
 }

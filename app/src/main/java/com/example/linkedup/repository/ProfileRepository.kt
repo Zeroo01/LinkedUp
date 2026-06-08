@@ -1,64 +1,35 @@
 package com.example.linkedup.data
 
+import com.example.linkedup.objects.Profile
 import com.google.firebase.firestore.FirebaseFirestore
 
-object ProfileRepository {
+class ProfileRepository(
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+) {
 
-    private val db = FirebaseFirestore.getInstance()
-
-    fun loadProfile(
-        email: String,
-        onResult: (Map<String, Any>) -> Unit
-    ) {
+    fun loadProfile(email: String, onResult: (Profile) -> Unit) {
         db.collection("users")
             .document(email)
             .get()
             .addOnSuccessListener { doc ->
-                onResult(doc.data ?: emptyMap())
+                val profile = doc.toObject(Profile::class.java) ?: Profile(email = email)
+                onResult(profile)
             }
+    }
+
+    fun updateProfile(email: String, profile: Profile) {
+        db.collection("users")
+            .document(email)
+            .set(profile)
     }
 
     fun createUserIfNotExists(email: String) {
+        val ref = db.collection("users").document(email)
 
-        val userRef = db.collection("users").document(email)
-
-        userRef.get().addOnSuccessListener { doc ->
-
+        ref.get().addOnSuccessListener { doc ->
             if (!doc.exists()) {
-
-                val newUser: Map<String, Any> = hashMapOf(
-                    "firstName" to "",
-                    "lastName" to "",
-                    "email" to email,
-                    "jobTitle" to "",
-                    "skills" to "",
-                    "interests" to ""
-                )
-
-                userRef.set(newUser)
+                ref.set(Profile(email = email))
             }
         }
-    }
-
-    fun updateProfile(
-        email: String,
-        firstName: String,
-        lastName: String,
-        jobTitle: String,
-        skills: String,
-        interests: String
-    ) {
-
-        val updatedData: Map<String, Any> = hashMapOf(
-            "firstName" to firstName,
-            "lastName" to lastName,
-            "jobTitle" to jobTitle,
-            "skills" to skills,
-            "interests" to interests
-        )
-
-        db.collection("users")
-            .document(email)
-            .update(updatedData)
     }
 }

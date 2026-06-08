@@ -8,7 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
-import com.example.linkedup.data.AuthRepository
+import com.example.linkedup.repository.AuthRepository
 import com.example.linkedup.ui.auth.AuthScreen
 import com.example.linkedup.ui.screens.*
 import com.example.linkedup.ui.theme.LinkedUpTheme
