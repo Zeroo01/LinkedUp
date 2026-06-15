@@ -1,6 +1,7 @@
 package com.example.linkedup.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -9,6 +10,7 @@ import com.example.linkedup.ui.screens.ApplicantScreen
 import com.example.linkedup.ui.screens.RecruiterScreen
 import com.example.linkedup.ui.screens.EventManagerScreen
 
+@Preview
 @Composable
 fun AppNavGraph() {
 
@@ -73,13 +75,8 @@ fun AppNavGraph() {
 
         // EVENT MANAGER
         composable("event") {
-
             EventManagerScreen(
-                onLogout = {
-                    navController.navigate("auth") {
-                        popUpTo(0)
-                    }
-                }
+                onLogout = { navController.navigate("auth") }
             )
         }
     }

@@ -1,15 +1,26 @@
 package com.example.linkedup.ui.auth
 
-import com.example.linkedup.objects.Presentation
+import androidx.compose.runtime.*
+import androidx.lifecycle.ViewModel
 import com.example.linkedup.repository.EventRepository
+import com.example.linkedup.objects.Event
+import com.example.linkedup.objects.Presentation
 
-class EventViewModel(
-    private val repo: EventRepository = EventRepository()
-) {
+class EventViewModel : ViewModel() {
 
-    val activeEvent = repo.getActiveEvent()
+    var activeEvent by mutableStateOf<Event?>(null)
+        private set
 
-    fun getPresentations(): List<Presentation> {
-        return activeEvent?.presentations ?: emptyList()
+    init {
+        load()
     }
+
+    private fun load() {
+        activeEvent = EventRepository.getActiveEvent()
+    }
+
+    fun onCreateEvent() {}
+    fun onParticipants() {}
+    fun onPresentationMode() {}
+    fun onEventClick(event: Event) {}
 }

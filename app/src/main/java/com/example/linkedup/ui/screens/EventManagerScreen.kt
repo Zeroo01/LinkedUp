@@ -2,15 +2,27 @@ package com.example.linkedup.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.example.linkedup.data.AuthRepository
+import com.example.linkedup.repository.EventRepository
+import com.example.linkedup.ui.components.ActiveEventCard
+import com.example.linkedup.ui.components.EventTimer
+import com.example.linkedup.objects.Event
+import com.example.linkedup.ui.auth.EventViewModel
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun EventManagerScreen(
+    viewModel: EventViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
     onLogout: () -> Unit
 ) {
+
+    val activeEvent = viewModel.activeEvent
+    val startTime = remember { System.currentTimeMillis() }
 
     Column(
         modifier = Modifier
@@ -18,35 +30,36 @@ fun EventManagerScreen(
             .padding(24.dp)
     ) {
 
-        Text(
-            text = "Event Manager Dashboard",
-            style = MaterialTheme.typography.headlineMedium
-        )
+        Text("Event Manager Dashboard")
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(Modifier.height(16.dp))
 
-        Button(
-            onClick = { /* Event erstellen */ },
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        activeEvent?.let { event ->
+
+            val elapsed = System.currentTimeMillis() - startTime
+            val minutes = TimeUnit.MILLISECONDS.toMinutes(elapsed)
+            val seconds = TimeUnit.MILLISECONDS.toSeconds(elapsed) % 60
+
+            ActiveEventCard(
+                event = event,
+                onClick = { viewModel.onEventClick(event) },
+                timerContent = {
+                    EventTimer(minutes, seconds)
+                }
+            )
+
+            Spacer(Modifier.height(16.dp))
+        }
+
+        Button(onClick = viewModel::onCreateEvent) {
             Text("➕ Event erstellen")
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Button(
-            onClick = { /* Teilnehmer */ },
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Button(onClick = viewModel::onParticipants) {
             Text("Teilnehmer verwalten")
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Button(
-            onClick = { /* Präsentationsmodus */ },
-            modifier = Modifier.fillMaxWidth()
-        ) {
+        Button(onClick = viewModel::onPresentationMode) {
             Text("Präsentationsmodus starten")
         }
 
@@ -54,11 +67,7 @@ fun EventManagerScreen(
             onClick = {
                 AuthRepository.logout()
                 onLogout()
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error
-            ),
-            modifier = Modifier.fillMaxWidth()
+            }
         ) {
             Text("Abmelden")
         }

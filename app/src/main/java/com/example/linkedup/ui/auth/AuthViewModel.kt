@@ -7,7 +7,7 @@ import com.example.linkedup.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 
 class AuthViewModel(
-    private val repo: AuthRepository = AuthRepository()
+    private val repo: AuthRepository
 ) : ViewModel() {
 
     var loading by mutableStateOf(false)

@@ -1,3 +1,5 @@
+package com.example.linkedup.ui.screens
+
 /**package com.example.linkedup.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
