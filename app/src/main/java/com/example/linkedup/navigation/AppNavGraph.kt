@@ -1,82 +1,101 @@
 package com.example.linkedup.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.linkedup.data.AuthRepository
 import com.example.linkedup.ui.auth.AuthScreen
-import com.example.linkedup.ui.screens.ApplicantScreen
-import com.example.linkedup.ui.screens.RecruiterScreen
-import com.example.linkedup.ui.screens.EventManagerScreen
+import com.example.linkedup.ui.screens.Applicant.ApplicantHomeScreen
+import com.example.linkedup.ui.screens.Recruiter.RecruiterHomeScreen
+import com.example.linkedup.ui.screens.RoleNavigator
+import com.example.linkedup.ui.screens.Routes
+import com.example.linkedup.ui.screens.eventmanager.EventManagerHomeScreen
 
-@Preview
 @Composable
 fun AppNavGraph() {
 
     val navController = rememberNavController()
 
+
     NavHost(
         navController = navController,
-        startDestination = "auth"
+        startDestination = Routes.Auth
     ) {
 
-        // AUTH SCREEN
-        composable("auth") {
+
+        // LOGIN / REGISTER
+        composable(Routes.Auth) {
 
             AuthScreen { role ->
 
-                when (role) {
-
-                    "APPLICANT" -> {
-                        navController.navigate("applicant") {
-                            popUpTo("auth") { inclusive = true }
-                        }
-                    }
-
-                    "RECRUITER" -> {
-                        navController.navigate("recruiter") {
-                            popUpTo("auth") { inclusive = true }
-                        }
-                    }
-
-                    "EVENT_MANAGER" -> {
-                        navController.navigate("event") {
-                            popUpTo("auth") { inclusive = true }
-                        }
-                    }
-                }
+                RoleNavigator.navigateByRole(
+                    role = role,
+                    navController = navController
+                )
             }
         }
 
-        // APPLICANT
-        composable("applicant") {
 
-            ApplicantScreen(
+        // BEWERBER
+        composable(Routes.ApplicantHome) {
+
+            ApplicantHomeScreen(
                 onLogout = {
-                    navController.navigate("auth") {
-                        popUpTo(0)
+
+                    AuthRepository.logout()
+
+                    navController.navigate(Routes.Auth) {
+
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
                     }
                 }
             )
         }
 
-        // RECRUITER
-        composable("recruiter") {
-
-            RecruiterScreen(
-                onLogout = {
-                    navController.navigate("auth") {
-                        popUpTo(0)
-                    }
-                }
-            )
-        }
 
         // EVENT MANAGER
-        composable("event") {
-            EventManagerScreen(
-                onLogout = { navController.navigate("auth") }
+        composable(Routes.EventManagerHome) {
+
+            EventManagerHomeScreen(
+                onLogout = {
+
+                    AuthRepository.logout()
+
+                    navController.navigate(Routes.Auth) {
+
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+
+        // RECRUITER
+        composable(Routes.RecruiterHome) {
+
+            RecruiterHomeScreen(
+                onLogout = {
+
+                    AuthRepository.logout()
+
+                    navController.navigate(Routes.Auth) {
+
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
+                    }
+                }
             )
         }
     }

@@ -7,7 +7,6 @@ import com.example.linkedup.objects.Event
 import com.example.linkedup.objects.Presentation
 
 class EventViewModel : ViewModel() {
-
     var activeEvent by mutableStateOf<Event?>(null)
         private set
 

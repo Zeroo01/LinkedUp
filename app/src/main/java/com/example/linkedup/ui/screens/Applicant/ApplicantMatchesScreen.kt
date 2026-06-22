@@ -1,4 +1,4 @@
-package com.example.linkedup.ui.screens
+package com.example.linkedup.ui.screens.Applicant
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +17,7 @@ data class MatchItem(
 )
 
 @Composable
-fun MatchesScreen() {
+fun ApplicantMatchesScreen() {
 
     val matches = listOf(
         MatchItem("BMW Group", "Android Developer", 78),

@@ -1,4 +1,4 @@
-package com.example.linkedup.ui.screens
+package com.example.linkedup.ui.screens.EventManager
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background

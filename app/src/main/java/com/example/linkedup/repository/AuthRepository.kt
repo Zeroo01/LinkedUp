@@ -10,7 +10,7 @@ object AuthRepository {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    // Einloggen
+    // Login
     fun login(
         email: String,
         password: String,
@@ -19,19 +19,24 @@ object AuthRepository {
         auth.signInWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
 
-                val uid = result.user?.uid ?: return@addOnSuccessListener
+                val uid = result.user?.uid
+
+                if (uid == null) {
+                    onResult(false, "Benutzer-ID nicht gefunden", null)
+                    return@addOnSuccessListener
+                }
 
                 firestore.collection("users")
                     .document(uid)
                     .get()
-                    .addOnSuccessListener { doc ->
+                    .addOnSuccessListener { document ->
 
-                        val role = doc.getString("role")
+                        val role = document.getString("role")
 
                         if (role != null) {
                             onResult(true, null, role)
                         } else {
-                            onResult(false, "Role nicht gefunden", null)
+                            onResult(false, "Keine Rolle gefunden", null)
                         }
                     }
                     .addOnFailureListener { error ->
@@ -53,7 +58,12 @@ object AuthRepository {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
 
-                val uid = result.user?.uid ?: return@addOnSuccessListener
+                val uid = result.user?.uid
+
+                if (uid == null) {
+                    onResult(false, "Benutzer-ID nicht gefunden", null)
+                    return@addOnSuccessListener
+                }
 
                 val user = UserData(
                     uid = uid,
@@ -65,24 +75,68 @@ object AuthRepository {
                     .document(uid)
                     .set(user)
                     .addOnSuccessListener {
-                        onResult(true, null, user.role.name)
+
+                        onResult(
+                            true,
+                            null,
+                            user.role.name
+                        )
                     }
                     .addOnFailureListener { error ->
-                        onResult(false, error.message, null)
+
+                        onResult(
+                            false,
+                            error.message,
+                            null
+                        )
                     }
             }
             .addOnFailureListener { error ->
-                onResult(false, error.message, null)
+
+                onResult(
+                    false,
+                    error.message,
+                    null
+                )
             }
     }
 
-    // UTILS
+    // Rolle laden
+    fun getUserRole(
+        onResult: (String?) -> Unit
+    ) {
+
+        val uid = auth.currentUser?.uid
+
+        if (uid == null) {
+            onResult(null)
+            return
+        }
+
+        firestore.collection("users")
+            .document(uid)
+            .get()
+            .addOnSuccessListener { document ->
+
+                val role = document.getString("role")
+                onResult(role)
+            }
+            .addOnFailureListener {
+                onResult(null)
+            }
+    }
+
+    // Session
     fun isLoggedIn(): Boolean {
         return auth.currentUser != null
     }
 
     fun getCurrentEmail(): String? {
         return auth.currentUser?.email
+    }
+
+    fun getCurrentUserId(): String? {
+        return auth.currentUser?.uid
     }
 
     fun logout() {

@@ -1,4 +1,4 @@
-package com.example.linkedup.ui.screens
+package com.example.linkedup.ui.screens.Recruiter
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 import com.example.linkedup.data.AuthRepository
 
 @Composable
-fun ApplicantScreen(
+fun RecruiterHomeScreen(
     onLogout: () -> Unit
 ) {
 
@@ -19,17 +19,26 @@ fun ApplicantScreen(
     ) {
 
         Text(
-            text = "Bewerber Dashboard",
+            text = "Recruiter Dashboard",
             style = MaterialTheme.typography.headlineMedium
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
-            onClick = { /* CV Upload */ },
+            onClick = { /* Stellen erstellen */ },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Lebenslauf hochladen")
+            Text("Stelle erstellen")
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Button(
+            onClick = { /* Kandidaten anzeigen */ },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Kandidaten ansehen")
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -38,12 +47,9 @@ fun ApplicantScreen(
             onClick = { /* Events */ },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Events ansehen")
+            Text("Events verwalten")
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // LogoutButton
         Button(
             onClick = {
                 AuthRepository.logout()

@@ -1,10 +1,18 @@
 package com.example.linkedup.ui.auth
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.linkedup.data.AuthRepository
 
 @Composable
@@ -16,157 +24,234 @@ fun AuthScreen(
     var password by remember { mutableStateOf("") }
 
     var isLoginMode by remember { mutableStateOf(true) }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-    var loading by remember { mutableStateOf(false) }
-
     var selectedRole by remember { mutableStateOf("APPLICANT") }
 
-    Column(
+    var loading by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+
+    // Bereits eingeloggt?
+    LaunchedEffect(Unit) {
+
+        if (AuthRepository.isLoggedIn()) {
+
+            AuthRepository.getUserRole { role ->
+
+                role?.let {
+                    onLoginSuccess(it)
+                }
+            }
+        }
+    }
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center
+            .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
 
-        Text(
-            text = if (isLoginMode) "Login" else "Registrieren",
-            style = MaterialTheme.typography.headlineMedium
-        )
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp)
+                .align(Alignment.Center),
+            shape = RoundedCornerShape(24.dp)
+        ) {
 
-        Spacer(modifier = Modifier.height(20.dp))
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-        // EMAIL
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("E-Mail") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // PASSWORD
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Passwort") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Rollen Auswahl (nur im Register-Modus)
-        if (!isLoginMode) {
-
-            Text(
-                text = "Rolle",
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row {
-                RadioButton(
-                    selected = selectedRole == "APPLICANT",
-                    onClick = { selectedRole = "APPLICANT" }
+                Text(
+                    text = "LinkedUp",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold
                 )
-                Text("Bewerber")
-            }
 
-            Row {
-                RadioButton(
-                    selected = selectedRole == "RECRUITER",
-                    onClick = { selectedRole = "RECRUITER" }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Recruiting für Karrieremessen",
+                    style = MaterialTheme.typography.bodyMedium
                 )
-                Text("Recruiter")
-            }
 
-            Row {
-                RadioButton(
-                    selected = selectedRole == "EVENT_MANAGER",
-                    onClick = { selectedRole = "EVENT_MANAGER" }
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Text(
+                    text = if (isLoginMode) "Anmelden" else "Registrieren",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
-                Text("Event Manager")
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+                Spacer(modifier = Modifier.height(24.dp))
 
-        // Login / Registrierungs-Button
-        Button(
-            onClick = {
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("E-Mail") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
 
-                loading = true
-                errorMessage = null
+                Spacer(modifier = Modifier.height(12.dp))
 
-                if (isLoginMode) {
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Passwort") },
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = PasswordVisualTransformation(),
+                    singleLine = true
+                )
 
-                    AuthRepository.login(email, password) { success, error, role ->
+                if (!isLoginMode) {
 
-                        loading = false
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                        if (success) {
-                            onLoginSuccess(role ?: "APPLICANT")
-                        } else {
-                            errorMessage = error
+                    Text(
+                        text = "Rolle auswählen",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+
+                        RoleOption(
+                            text = "Bewerber",
+                            selected = selectedRole == "APPLICANT"
+                        ) {
+                            selectedRole = "APPLICANT"
                         }
-                    }
 
-                } else {
+                        RoleOption(
+                            text = "Recruiter",
+                            selected = selectedRole == "RECRUITER"
+                        ) {
+                            selectedRole = "RECRUITER"
+                        }
 
-                    AuthRepository.register(
-                        email,
-                        password,
-                        selectedRole
-                    ) { success, error, role ->
-
-                        loading = false
-
-                        if (success) {
-                            onLoginSuccess(role ?: selectedRole)
-                        } else {
-                            errorMessage = error
+                        RoleOption(
+                            text = "Event Manager",
+                            selected = selectedRole == "EVENT_MANAGER"
+                        ) {
+                            selectedRole = "EVENT_MANAGER"
                         }
                     }
                 }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = email.isNotBlank() && password.isNotBlank() && !loading
-        ) {
-            Text(
-                text =
-                    if (loading) "Lädt..."
-                    else if (isLoginMode) "Login"
-                    else "Registrieren"
-            )
-        }
 
-        Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-        // Switch
-        TextButton(
-            onClick = {
-                isLoginMode = !isLoginMode
-                errorMessage = null
+                Button(
+                    onClick = {
+
+                        loading = true
+                        errorMessage = null
+
+                        if (isLoginMode) {
+
+                            AuthRepository.login(
+                                email,
+                                password
+                            ) { success, error, role ->
+
+                                loading = false
+
+                                if (success) {
+                                    onLoginSuccess(role ?: "APPLICANT")
+                                } else {
+                                    errorMessage = error
+                                }
+                            }
+
+                        } else {
+
+                            AuthRepository.register(
+                                email,
+                                password,
+                                selectedRole
+                            ) { success, error, role ->
+
+                                loading = false
+
+                                if (success) {
+                                    onLoginSuccess(role ?: selectedRole)
+                                } else {
+                                    errorMessage = error
+                                }
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    enabled = !loading &&
+                            email.isNotBlank() &&
+                            password.isNotBlank()
+                ) {
+
+                    Text(
+                        if (loading)
+                            "Bitte warten..."
+                        else if (isLoginMode)
+                            "Anmelden"
+                        else
+                            "Registrieren"
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                TextButton(
+                    onClick = {
+
+                        isLoginMode = !isLoginMode
+                        errorMessage = null
+                    }
+                ) {
+
+                    Text(
+                        if (isLoginMode)
+                            "Noch kein Konto? Registrieren"
+                        else
+                            "Bereits registriert? Anmelden"
+                    )
+                }
+
+                errorMessage?.let {
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
-        ) {
-            Text(
-                if (isLoginMode)
-                    "Noch kein Konto? Registrieren"
-                else
-                    "Schon ein Konto? Login"
-            )
         }
+    }
+}
 
-        // Fehlermeldung
-        errorMessage?.let {
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = it,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
+@Composable
+private fun RoleOption(
+    text: String,
+    selected: Boolean,
+    onSelect: () -> Unit
+) {
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        RadioButton(
+            selected = selected,
+            onClick = onSelect
+        )
+
+        Text(text)
     }
 }
