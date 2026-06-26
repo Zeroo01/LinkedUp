@@ -1,66 +1,126 @@
 package com.example.linkedup.ui.screens.Recruiter
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.example.linkedup.data.AuthRepository
+import com.example.linkedup.ui.components.BottomItem
+import com.example.linkedup.ui.components.RoleNavBar
 
 @Composable
 fun RecruiterHomeScreen(
     onLogout: () -> Unit
 ) {
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-    ) {
 
-        Text(
-            text = "Recruiter Dashboard",
-            style = MaterialTheme.typography.headlineMedium
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Button(
-            onClick = { /* Stellen erstellen */ },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Stelle erstellen")
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Button(
-            onClick = { /* Kandidaten anzeigen */ },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Kandidaten ansehen")
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Button(
-            onClick = { /* Events */ },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Events verwalten")
-        }
-
-        Button(
-            onClick = {
-                AuthRepository.logout()
-                onLogout()
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error
-            ),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Abmelden")
-        }
+    var selectedTab by remember {
+        mutableStateOf(0)
     }
+
+
+    var showCreateJob by remember {
+        mutableStateOf(false)
+    }
+
+
+
+    Scaffold(
+
+        bottomBar = {
+
+
+            if(!showCreateJob) {
+
+
+                RoleNavBar(
+
+                    items = listOf(
+
+                        BottomItem("Home"),
+
+                        BottomItem("Matches"),
+
+                        BottomItem("Stellen")
+
+                    ),
+
+
+                    selectedIndex = selectedTab,
+
+
+                    onItemSelected = {
+
+                        selectedTab = it
+
+                    }
+
+                )
+
+            }
+
+        }
+
+    ) { padding ->
+
+
+
+        Box(
+            modifier = Modifier.padding(padding)
+        ) {
+
+
+
+            if(showCreateJob) {
+
+
+                CreateJobScreen(
+
+                    onBack = {
+
+                        showCreateJob = false
+
+                    }
+
+                )
+
+
+            }
+
+            else {
+
+
+                when(selectedTab) {
+
+
+                    0 -> RecruiterDashboard(
+                        onLogout = onLogout
+                    )
+
+
+                    1 -> RecruiterMatchesScreen()
+
+
+                    2 -> RecruiterJobsScreen(
+
+                        onCreateJob = {
+
+                            showCreateJob = true
+
+                        }
+
+                    )
+
+                }
+
+
+            }
+
+
+
+        }
+
+
+    }
+
 }
