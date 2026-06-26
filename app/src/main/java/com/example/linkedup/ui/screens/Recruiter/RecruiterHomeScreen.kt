@@ -2,15 +2,18 @@ package com.example.linkedup.ui.screens.Recruiter
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.linkedup.data.AuthRepository
+import com.example.linkedup.repository.CvTransferRepository
 
 @Composable
 fun RecruiterHomeScreen(
     onLogout: () -> Unit
 ) {
+
+    var sessionId by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -26,29 +29,26 @@ fun RecruiterHomeScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
-            onClick = { /* Stellen erstellen */ },
+            onClick = {
+                CvTransferRepository.createSession { id ->
+                    sessionId = id
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Stelle erstellen")
+            Text("CV Session starten")
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Button(
-            onClick = { /* Kandidaten anzeigen */ },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Kandidaten ansehen")
+        sessionId?.let {
+            Text(
+                text = "Session Code: $it",
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Button(
-            onClick = { /* Events */ },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Events verwalten")
-        }
+        Spacer(modifier = Modifier.height(20.dp))
 
         Button(
             onClick = {

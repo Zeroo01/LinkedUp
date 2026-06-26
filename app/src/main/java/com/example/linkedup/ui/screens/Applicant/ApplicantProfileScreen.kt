@@ -12,9 +12,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.linkedup.data.AuthRepository
+import com.example.linkedup.repository.CvRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
+
 
 @Composable
 fun ApplicantProfileScreen(
@@ -157,13 +159,32 @@ fun ApplicantProfileScreen(
 
         // ---------------- CV ----------------
         item {
+
+            val cvPicker = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.GetContent()
+            ) { uri ->
+                uri?.let {
+                    CvRepository.saveCvLocally(it)
+                }
+            }
+
+            val cv = CvRepository.getLocalCv()
+
             ProfileSection("Lebenslauf") {
-                Text("Kein Lebenslauf hochgeladen")
+
+                Text(
+                    text = if (cv != null)
+                        "CV gespeichert "
+                    else
+                        "Kein Lebenslauf hochgeladen"
+                )
 
                 Spacer(Modifier.height(8.dp))
 
-                Button(onClick = { }) {
-                    Text("CV hochladen")
+                Button(onClick = {
+                    cvPicker.launch("application/pdf")
+                }) {
+                    Text(if (cv != null) "CV ändern" else "CV hochladen")
                 }
             }
 

@@ -9,7 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.linkedup.ui.components.DashboardCard
 
-
+//TODO UI anpassen
 @Composable
 fun EventManagerDashboard(
     onLogout: () -> Unit
@@ -39,7 +39,7 @@ fun EventManagerDashboard(
 
 
             Text(
-                text = "Verwalte deine Karrieremessen und Events",
+                text = "Deine Übersicht von Karrieremessen und Events",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -57,7 +57,7 @@ fun EventManagerDashboard(
 
             DashboardCard(
 
-                title = "Aktive Events",
+                title = "Aktuelle Events",
 
                 description =
                     "3 Karrieremessen sind aktuell aktiv."
@@ -125,91 +125,6 @@ fun EventManagerDashboard(
                 modifier = Modifier.height(24.dp)
             )
         }
-
-
-
-        // SCHNELLAKTIONEN
-        item {
-
-            Text(
-
-                text = "Schnellaktionen",
-
-                style = MaterialTheme.typography.titleLarge,
-
-                fontWeight = FontWeight.SemiBold
-            )
-
-
-            Spacer(
-                modifier = Modifier.height(12.dp)
-            )
-        }
-
-
-
-        item {
-
-            Button(
-
-                onClick = { },
-
-                modifier = Modifier.fillMaxWidth()
-
-            ) {
-
-                Text(
-                    "Neues Event erstellen"
-                )
-            }
-
-
-            Spacer(
-                modifier = Modifier.height(8.dp)
-            )
-
-
-
-            Button(
-
-                onClick = { },
-
-                modifier = Modifier.fillMaxWidth()
-
-            ) {
-
-                Text(
-                    "Teilnehmer verwalten"
-                )
-            }
-
-
-            Spacer(
-                modifier = Modifier.height(8.dp)
-            )
-
-
-
-            Button(
-
-                onClick = { },
-
-                modifier = Modifier.fillMaxWidth()
-
-            ) {
-
-                Text(
-                    "Unternehmen verwalten"
-                )
-            }
-
-
-            Spacer(
-                modifier = Modifier.height(16.dp)
-            )
-        }
-
-
 
         // LOGOUT
         item {
